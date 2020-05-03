@@ -1,10 +1,6 @@
-// from data.js
-var tableData = data;
-var filter_datetime = "";
-
-function populate_date_dropdown() {
+// Function to populate a select element with valid dates from the sightings data
+function populateDateSelection() {
     var unique_dates = new Array();
-    console.log("In populate_date_dropdown.")
     let sDateOptions = `<option selected value="All">All</option>`
     for (const sighting of data) {
         if (!unique_dates.includes(sighting.datetime)) {
@@ -12,40 +8,26 @@ function populate_date_dropdown() {
             sDateOptions += `<option value="${sighting.datetime}">${sighting.datetime}</option>`
         }   
     }
-    document.getElementById("date-selector").innerHTML = sDateOptions
+    document.getElementById("dateSelector").innerHTML = sDateOptions
 }
 
-function filter_by_date(sighting) {
-    return sighting.datetime == filter_datetime;
+// Utility function to generate HTML Table Rows from a list of objects, with direction from Travis Horn (travishorn.com)
+function objectList2TableRows(objectList) {
+    let cols = Object.keys(objectList[0]);
+    return objectList.map(row => "<tr>" + cols.map(colName => '<td>' + row[colName] + '</td>').join("") + "</tr>").join("");
 }
 
-function data_to_html() {
-    let body = "";
-    for (let i = 0; i < tableData.length; i++) {
-        body += "<tr>";
-        for (let j in tableData[i]) {
-            body += "<td>" + tableData[i][j] + "</td>";
-        }
-        body += "</tr>";
-    }
-    document.getElementById("sightings").innerHTML = body;
-}
-
-function filter_table() {
-    console.log("In filter_table");
-    filter_datetime = document.getElementById("date-selector").value;
+// Function to display sightings, based on the Date Filter
+function filterTable() {
+    let filter_datetime = document.getElementById("dateSelector").value;
+    let tableData = Array();
     if (filter_datetime == "All")
         tableData = data;
     else
-        tableData = data.filter(filter_by_date);
-    data_to_html();
-    display_count()
+        tableData = data.filter(sighting => sighting.datetime == filter_datetime);
+    document.getElementById("sightings").innerHTML = objectList2TableRows(tableData);
+    document.getElementById("sightingCount").innerHTML = String(tableData.length) + " Sightings"
 }
 
-function display_count() {
-    document.getElementById("sighting-count").innerHTML = String(tableData.length) + " Sightings"
-}
-
-populate_date_dropdown()
-data_to_html()
-display_count()
+populateDateSelection();
+filterTable();
