@@ -1,10 +1,10 @@
 // Function to populate a select element with valid dates from the sightings data
 function populateDateSelection() {
-    var unique_dates = new Array();
+    var uniqueDates = new Array();
     let sDateOptions = `<option selected value="All">All</option>`
     for (const sighting of data) {
-        if (!unique_dates.includes(sighting.datetime)) {
-            unique_dates.push(sighting.datetime);
+        if (!uniqueDates.includes(sighting.datetime)) {
+            uniqueDates.push(sighting.datetime);
             sDateOptions += `<option value="${sighting.datetime}">${sighting.datetime}</option>`
         }   
     }
@@ -19,12 +19,12 @@ function objectList2TableRows(objectList) {
 
 // Function to display sightings, based on the Date Filter
 function filterTable() {
-    let filter_datetime = document.getElementById("dateSelector").value;
+    let filterDatetime = document.getElementById("dateSelector").value;
     let tableData = Array();
-    if (filter_datetime == "All")
+    if (filterDatetime == "All")
         tableData = data;
     else
-        tableData = data.filter(sighting => sighting.datetime == filter_datetime);
+        tableData = data.filter(sighting => sighting.datetime == filterDatetime);
     document.getElementById("sightings").innerHTML = objectList2TableRows(tableData);
     document.getElementById("sightingCount").innerHTML = String(tableData.length) + " Sightings"
 }
