@@ -1,3 +1,32 @@
+// Class with chainable function(s)
+class Sightings {
+    constructor() {
+        this.sightingArray = data;
+    }
+
+    // Chainable Filter Method
+    filterBy(property) {
+        let filterValue = document.getElementById(property + "Selector").value;
+        this.sightingArray = this.sightingArray.filter(sighting => filterValue == "All" || sighting[property] == filterValue);
+        return this;
+    }
+
+    // Method to generate HTML Table Rows from a list of objects, with direction from Travis Horn (travishorn.com)
+    getTableBodyHtml() {
+        let html = ""
+        if (this.sightingArray.length > 0) {
+            let cols = Object.keys(this.sightingArray[0]);
+            html = this.sightingArray.map(row => "<tr>" + cols.map(colName => '<td>' + row[colName] + '</td>').join("") + "</tr>").join("");
+        }
+        return html;
+    }
+
+    // Method to display sightings count
+    getSightingsCount() {
+        return String(this.sightingArray.length) + " " + ((this.sightingArray.length > 1) ? "Sightings" : "Sighting");
+    }
+}
+
 // Function to populate a select element with unique "property" values from the sightings data
 function populateSelection(property, bSort=true) {
     let uniqueProperties = new Array();
@@ -12,35 +41,15 @@ function populateSelection(property, bSort=true) {
     document.getElementById(property + "Selector").innerHTML = sOptions
 }
 
-// Utility function to generate HTML Table Rows from a list of objects, with direction from Travis Horn (travishorn.com)
-function objectList2TableRows(objectList) {
-    let html = ""
-    if (objectList.length > 0) {
-        let cols = Object.keys(objectList[0]);
-        html = objectList.map(row => "<tr>" + cols.map(colName => '<td>' + row[colName] + '</td>').join("") + "</tr>").join("");
-    }
-    return html;
-}
-
-// Function to display sightings, based on the Date Filter
-function filterSighting(property) {
-    let filterValue = document.getElementById(property + "Selector").value;
-    return (filterValue == "All" || sighting[property] == filterValue);
-}
-
 function filterSightings() {
-    datetimeFilter = document.getElementById("datetimeSelector").value
-    cityFilter = document.getElementById("citySelector").value
-    stateFilter = document.getElementById("stateSelector").value
-    countryFilter = document.getElementById("countrySelector").value
-    shapeFilter = document.getElementById("shapeSelector").value
-    let tableData = data.filter(sighting => datetimeFilter == "All" || sighting['datetime'] == datetimeFilter)
-                        .filter(sighting => cityFilter == "All" || sighting['city'] == cityFilter)
-                        .filter(sighting => stateFilter == "All" || sighting['state'] == stateFilter)                        
-                        .filter(sighting => countryFilter == "All" || sighting['country'] == countryFilter)
-                        .filter(sighting => shapeFilter == "All" || sighting['shape'] == shapeFilter);
-    document.getElementById("sightings").innerHTML = objectList2TableRows(tableData);
-    document.getElementById("sightingCount").innerHTML = String(tableData.length) + " " + ((tableData.length > 1) ? "Sightings" : "Sighting");
+    sightings = new Sightings();
+    sightings.filterBy("datetime")
+             .filterBy("city")
+             .filterBy("state")
+             .filterBy("country")
+             .filterBy("shape");
+    document.getElementById("sightings").innerHTML = sightings.getTableBodyHtml();
+    document.getElementById("sightingCount").innerHTML = sightings.getSightingsCount();
 }
 
 function resetFilters() {
@@ -59,3 +68,6 @@ populateSelection("state");
 populateSelection("country");
 populateSelection("shape");
 filterSightings();
+
+// Need to integrate d3 event preventDefault().
+// Consider using d3 to loop over selectors.
